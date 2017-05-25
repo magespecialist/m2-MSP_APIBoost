@@ -1,0 +1,21 @@
+{
+    "name": "msp/apiboost",
+    "description": "",
+    "require": {
+        "php": "~7.0.0"
+    },
+    "suggest": {
+
+    },
+    "type": "magento2-module",
+    "version": "0.1.0",
+    "license": "OSL 3.0",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "MSP\\APIBoost\\": ""
+        }
+    }
+}
