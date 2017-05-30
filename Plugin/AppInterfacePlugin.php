@@ -21,6 +21,7 @@
 namespace MSP\APIBoost\Plugin;
 
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Registry;
 use MSP\APIBoost\Api\CacheManagementInterface;
 
 class AppInterfacePlugin

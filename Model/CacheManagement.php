@@ -23,6 +23,7 @@ namespace MSP\APIBoost\Model;
 use Magento\Framework\App\RequestInterface;
 use MSP\APIBoost\Api\CacheManagementInterface;
 use Magento\Framework\Webapi\Rest\Response;
+use MSP\APIBoost\Api\TagProcessorInterface;
 use Zend\Http\Headers;
 
 class CacheManagement implements CacheManagementInterface
@@ -45,14 +46,30 @@ class CacheManagement implements CacheManagementInterface
      */
     private $response;
 
+    /**
+     * @var array
+     */
+    private $tags;
+
+    /**
+     * @var array
+     */
+    private $ttls;
+
+    protected $matchedCode = null;
+
     public function __construct(
         Response $response,
         CacheType $cacheType,
-        array $paths = []
+        array $paths = [],
+        array $ttls = [],
+        array $tags = []
     ) {
         $this->cacheType = $cacheType;
         $this->paths = $paths;
         $this->response = $response;
+        $this->tags = $tags;
+        $this->ttls = $ttls;
     }
 
     /**
@@ -76,8 +93,9 @@ class CacheManagement implements CacheManagementInterface
             return false;
         }
 
-        foreach ($this->paths as $path) {
+        foreach ($this->paths as $code => $path) {
             if (preg_match('/' . $path . '/i', $uriPath)) {
+                $this->matchedCode = $code;
                 return true;
             }
         }
@@ -145,6 +163,19 @@ class CacheManagement implements CacheManagementInterface
             'body' => $responseBody,
         ];
 
-        $this->cacheType->save(serialize($cacheData), $cacheKey, [CacheType::CACHE_TAG], static::CACHE_TTL);
+        $tags = [CacheType::CACHE_TAG];
+        foreach ($this->tags as $code => $tag) {
+            /** @var $tag TagProcessorInterface */
+            $newTags = $tag->getTags($request);
+            foreach ($newTags as $newTag) {
+                $tags[] = $newTag;
+            }
+        }
+
+        $tags = array_unique($tags);
+
+        $ttl = intval(isset($this->ttls[$this->matchedCode]) ? $this->ttls[$this->matchedCode] : static::CACHE_TTL);
+
+        $this->cacheType->save(serialize($cacheData), $cacheKey, $tags, $ttl);
     }
 }

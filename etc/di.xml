@@ -29,6 +29,14 @@
                 <item name="products" xsi:type="string">^\/V1\/products</item>
                 <item name="categories" xsi:type="string">^\/V1\/categories</item>
             </argument>
+            <argument name="ttls" xsi:type="array">
+                <item name="products" xsi:type="number">3600</item>
+                <item name="categories" xsi:type="number">7200</item>
+            </argument>
+            <argument name="tags" xsi:type="array">
+                <item name="products" xsi:type="object">MSP\APIBoost\Model\TagProcessor\Product</item>
+                <item name="categories" xsi:type="object">MSP\APIBoost\Model\TagProcessor\Category</item>
+            </argument>
         </arguments>
     </type>
     <type name="Magento\Framework\AppInterface">
