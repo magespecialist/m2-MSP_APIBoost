@@ -37,6 +37,10 @@
                 <item name="products" xsi:type="object">MSP\APIBoost\Model\TagProcessor\Product</item>
                 <item name="categories" xsi:type="object">MSP\APIBoost\Model\TagProcessor\Category</item>
             </argument>
+            <argument name="keys" xsi:type="array">
+                <item name="base" xsi:type="object">MSP\APIBoost\Model\KeyProcessor\Base</item>
+                <item name="customer" xsi:type="object">MSP\APIBoost\Model\KeyProcessor\Customer</item>
+            </argument>
         </arguments>
     </type>
     <type name="Magento\Framework\AppInterface">

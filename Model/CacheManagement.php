@@ -23,6 +23,7 @@ namespace MSP\APIBoost\Model;
 use Magento\Framework\App\RequestInterface;
 use MSP\APIBoost\Api\CacheManagementInterface;
 use Magento\Framework\Webapi\Rest\Response;
+use MSP\APIBoost\Api\KeyProcessorInterface;
 use MSP\APIBoost\Api\TagProcessorInterface;
 use Zend\Http\Headers;
 
@@ -56,6 +57,11 @@ class CacheManagement implements CacheManagementInterface
      */
     private $ttls;
 
+    /**
+     * @var array
+     */
+    private $keys;
+
     protected $matchedCode = null;
 
     public function __construct(
@@ -63,6 +69,7 @@ class CacheManagement implements CacheManagementInterface
         CacheType $cacheType,
         array $paths = [],
         array $ttls = [],
+        array $keys = [],
         array $tags = []
     ) {
         $this->cacheType = $cacheType;
@@ -70,6 +77,7 @@ class CacheManagement implements CacheManagementInterface
         $this->response = $response;
         $this->tags = $tags;
         $this->ttls = $ttls;
+        $this->keys = $keys;
     }
 
     /**
@@ -110,14 +118,13 @@ class CacheManagement implements CacheManagementInterface
      */
     protected function getCacheKey(\Magento\Framework\App\RequestInterface $request)
     {
-        return md5(serialize([
-            $request->getMethod(),
-            $request->getRequestUri(),
-            [
-                $request->getHeader('Content-Type'),
-                $request->getHeader('Authorization'),
-            ]
-        ]));
+        $keyInfo = [];
+        foreach ($this->keys as $code => $keyProcessor) {
+            /** @var $keyProcessor KeyProcessorInterface */
+            array_merge($keyInfo, $keyProcessor->getKeys($request));
+        }
+
+        return md5(serialize($keyInfo));
     }
 
     /**
@@ -164,9 +171,9 @@ class CacheManagement implements CacheManagementInterface
         ];
 
         $tags = [CacheType::CACHE_TAG];
-        foreach ($this->tags as $code => $tag) {
-            /** @var $tag TagProcessorInterface */
-            $newTags = $tag->getTags($request);
+        foreach ($this->tags as $code => $tagProcessor) {
+            /** @var $tagProcessor TagProcessorInterface */
+            $newTags = $tagProcessor->getTags($request);
             foreach ($newTags as $newTag) {
                 $tags[] = $newTag;
             }

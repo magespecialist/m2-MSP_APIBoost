@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  * MageSpecialist
  *
@@ -18,9 +17,15 @@
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="MSP_APIBoost" setup_version="0.1.2">
-    </module>
-</config>
+
+namespace MSP\APIBoost\Api;
+
+interface KeyProcessorInterface
+{
+    /**
+     * Return a list of cache keys for a request
+     * @param \Magento\Framework\App\RequestInterface $request
+     * @return array
+     */
+    public function getKeys(\Magento\Framework\App\RequestInterface $request);
+}
